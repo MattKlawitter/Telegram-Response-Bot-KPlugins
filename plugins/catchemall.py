@@ -57,32 +57,32 @@ class CatchEmAll(Plugin):
             return "Catch em' All: You missed! Darn it was so close!"
 
         user = command.user.username
-        commands = command.args.split(" ")
+        item = command.args
 
-        if ',' in command.args:
-            commands = command.args.split(",")
+        # Multi catches are now disabled
+        # if ',' in command.args:
+        #     commands = command.args.split(",")
 
         response = "Catch em' All: Congrats {} you caught:\n".format(user)
 
-        for item in commands:
-            if item in self.current_encounter.keys():
-                poke = self.current_encounter.pop(item)
-                self.poke_bank.store_mon(user, poke)
-                response += "{} (cp:{})!\n".format(poke.name, str(poke.cp))
+        if item.lower() in self.current_encounter.keys():
+            poke = self.current_encounter.pop(item.lower())
+            self.poke_bank.store_mon(user, poke)
+            response += "{} (cp:{})!\n".format(poke.name, str(poke.cp))
         return response
         
     def com_fight(self, command):
         user = command.user.username
-        commands = command.args.split(" ")
+        item = command.args
 
-        if ',' in command.args:
-            commands = command.args.split(",")
+        # Multi battles are now disabled
+        # if ',' in command.args:
+        #     commands = command.args.split(",")
 
         if self.battle_manager.has_party(user):
             encounter = []
-            for item in commands:
-                if item in self.current_encounter.keys():
-                    encounter.append(self.current_encounter.pop(item))
+            if item.lower() in self.current_encounter.keys():
+                encounter.append(self.current_encounter.pop(item.lower()))
 
             if len(encounter) > 0:
                 battle = Battle(user, "Wild Pokemon")
@@ -309,10 +309,10 @@ class CatchEmAll(Plugin):
                 self.bot.send_message(channel, response)
             sleep(spawn_time)
 
-    # Determines if a user missed a catch :B1:
+    # Determines if a user missed a catch
     def check_miss(self):
         r = random.randint(0,100)
-        return r <= 8
+        return r <= 10
 
     # Run whenever someone on telegram types one of these commands
     def on_command(self, command):
@@ -369,21 +369,21 @@ class CatchEmAll(Plugin):
 
     # Run whenever someone types /help catchemall
     def get_help(self):
-        return "'/poke_enable' to enable alerts in this channel \n,\
-                '/poke_disable' to disable alerts in this channel\n,\
-                '/catch [poke_name]' to catch a pokemon \n,\
-                '/fight [poke_name]' to fight the current encounter \n,\
-                '/poke_list' to see pokemon you've caught and their bank location\n,\
-                '/poke_release [bank_id]' to release a pokemon you've caught\n,\
-                '/poke_stat [bank_id] to view stats on a pokemon you've caught\n,\
-                '/poke_trade [receiver] [bank_id] to trade a pokemon you own\n,\
-                '/poke_grant [user] [pokemon] admin command to grant pokemon\n,\
-                '/poke_form_party [id1,id2,id3,etc.] to create a pokemon party\n,\
-                '/poke_view_party to view a created pokemon party\n,\
-                '/poke_post [opponent_name]\n,\
-                '/poke_rm_post\n,\
-                '/poke_accept_battle [challenger_name]\n,\
-                '/poke_battle_npc [difficulty between 0-7]"
+        return "/poke_enable to enable alerts in this channel\n" \
+        "/poke_disable to disable alerts in this channel\n" \
+        "/catch [poke_name] to catch a pokemon\n" \
+        "/fight [poke_name] to fight the current encounter\n" \
+        "/poke_list to see pokemon you've caught and their id\n" \
+        "/poke_release [bank_id] to release a pokemon\n" \
+        "/poke_stat [bank_id] to view stats on a pokemon\n" \
+        "/poke_trade [receiver] [bank_id] to trade a pokemon\n" \
+        "/poke_grant [user] [pokemon] admin command to grant pokemon\n" \
+        "/poke_form_party [id1,id2,id3,etc.] to create a party\n" \
+        "/poke_view_party to view a created party\n" \
+        "/poke_post [opponent_name]\n" \
+        "/poke_rm_post\n" \
+        "/poke_accept_battle [challenger_name]\n"\
+        "/poke_battle_npc [difficulty between 0-7]"
 
 
 # Handles methods to generate and battle npcs
